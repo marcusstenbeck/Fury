@@ -41,6 +41,14 @@ public:
 	// Sätter in värden.
 	void setBodyData(RigidBody* one, RigidBody *two,
 					 real friction, real restitution);
+	
+protected:
+	
+	void calculateContactBasis();
+	
+	Ogre::Matrix3 contactToWorld;
+	
+	Ogre::Vector3 relativeContactPosition[2];
 };
 
 

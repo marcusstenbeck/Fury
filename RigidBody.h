@@ -48,6 +48,9 @@ namespace fury
 		bool hasFiniteMass();
 		real getMass();
 		void setMass(real mass);
+		real getInverseMass() const;
+		void getInverseInertiaTensorWorld(Ogre::Matrix3 *inverseInertiaTensor) const;
+		
 	};
 }
 

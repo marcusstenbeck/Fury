@@ -164,3 +164,13 @@ void RigidBody::setMass(real mass)
 	
 	inverseMass = 1/mass;
 };
+
+real RigidBody::getInverseMass() const
+{
+    return inverseMass;
+};
+
+void RigidBody::getInverseInertiaTensorWorld(Ogre::Matrix3 *inverseInertiaTensor) const
+{
+    *inverseInertiaTensor = inverseInertiaTensorWorld;
+};
