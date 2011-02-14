@@ -24,7 +24,7 @@ namespace fury
 		Ogre::Vector3 velocity;
 		Ogre::Vector3 acceleration;		
 		Ogre::Vector3 lastFrameAcceleration;
-		Ogre::Quaternion rotation; //angular velocity!
+		Ogre::Vector3 angularVelocity;
 //		Ogre::Matrix4 transformMatrix;
 		Ogre::Matrix3 inverseInertiaTensor;
 		Ogre::Matrix3 inverseInertiaTensorWorld;
@@ -34,8 +34,9 @@ namespace fury
 		real inverseMass;
 		
 		//??
-		Ogre::Vector3 forceAccum;
-		Ogre::Vector3 torqueAccum;		
+		Ogre::Vector3 forceAccum;   //Linear momentum
+		Ogre::Vector3 torqueAccum;
+		Ogre::Vector3 angularMomentum;
 		
 		
 		void calculateDerivedData();

@@ -58,7 +58,8 @@ void DemoApp::setupDemoScene()
 	rb1->forceAccum = Ogre::Vector3(0.0, 0.0, 0.0);
 	rb1->torqueAccum = Ogre::Vector3(0.0, 0.0, 0.0);
 	rb1->position = Ogre::Vector3(0.0, 0.5, 0.0);
-	rb1->rotation = Ogre::Quaternion(1.0, 0.0, 0.0, 0.0);
+	rb1->angularVelocity = Ogre::Vector3(0.0, 0.0, 0.0);
+	rb1->angularMomentum = Ogre::Vector3(0.0,0.0,0.0);
 	rb1->orientation = Ogre::Quaternion(1.0, 0.0, 0.0, 0.0);
 	rb1->setMass(1.0);
 	rb1->velocity = Ogre::Vector3(0.0, 0.0, 0.0);
@@ -69,7 +70,7 @@ void DemoApp::setupDemoScene()
 															  0.0, 0.5, 0.0,
 															  0.0, 0.0, 0.5
 															  ));
-	rb1->addForceAtPoint(Ogre::Vector3(0.0, 100.0, 0.0), Ogre::Vector3(0.0, 1.0, 0.0));
+	rb1->addForceAtPoint(Ogre::Vector3(0.0, 100.0, 0.0), rb1->position + Ogre::Vector3(0.0, 0.0, 0.0));
 	rb1->calculateDerivedData();
 	
 	fury::Core::getSingletonPtr()->gor.add(rb1, m_pCubeNode);
@@ -108,7 +109,7 @@ void DemoApp::runDemo()
 			OgreFramework::getSingletonPtr()->m_pLog->logMessage("forceAccum: " + Ogre::StringConverter::toString(rb1->forceAccum));
 			OgreFramework::getSingletonPtr()->m_pLog->logMessage("velocity: " + Ogre::StringConverter::toString(rb1->velocity));
 			OgreFramework::getSingletonPtr()->m_pLog->logMessage("acceleration: " + Ogre::StringConverter::toString(rb1->acceleration));
-			OgreFramework::getSingletonPtr()->m_pLog->logMessage("rotation: " + Ogre::StringConverter::toString(rb1->rotation));
+			OgreFramework::getSingletonPtr()->m_pLog->logMessage("angularVelocity: " + Ogre::StringConverter::toString(rb1->angularVelocity));
 			OgreFramework::getSingletonPtr()->m_pLog->logMessage("orientation: " + Ogre::StringConverter::toString(rb1->orientation));
 			
 			OgreFramework::getSingletonPtr()->m_pKeyboard->capture();
@@ -149,11 +150,15 @@ bool DemoApp::keyPressed(const OIS::KeyEvent &keyEventRef)
 	if(OgreFramework::getSingletonPtr()->m_pKeyboard->isKeyDown(OIS::KC_F))
 	{
 		//rb1->addForceAtPoint(Ogre::Vector3(0.0, 1000.0, 0.0), Ogre::Vector3(0.0, 1.0, 0.0).randomDeviant(Ogre::Radian(Ogre::Math::PI)));
-		rb1->addForceAtPoint(Ogre::Vector3(0.0, 100.0, 0.0), Ogre::Vector3(0.1, 0.0, 0.0));
+		rb1->addForceAtPoint(Ogre::Vector3(0.0, 150.0, 0.0), rb1->position + Ogre::Vector3(.05, 0.0, 0.0));
 	}
 	if(OgreFramework::getSingletonPtr()->m_pKeyboard->isKeyDown(OIS::KC_G))
 	{
-		rb1->addForceAtPoint(Ogre::Vector3(0.0, 100.0, 0.0), Ogre::Vector3(-0.1, 0.0, 0.0));
+		rb1->addForceAtPoint(Ogre::Vector3(0.0, 150.0, 0.0), rb1->position + Ogre::Vector3(-.05, 0.0, 0.0));
+	}
+	if(OgreFramework::getSingletonPtr()->m_pKeyboard->isKeyDown(OIS::KC_H))
+	{
+		rb1->addForceAtPoint(Ogre::Vector3(50.0, 100.0, 0.0), rb1->position + Ogre::Vector3(0.0, 0.0, .05));
 	}
 #endif
 	return true;

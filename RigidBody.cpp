@@ -108,32 +108,28 @@ void RigidBody::integrate(real duration)
 	//Work out the acceleration from the force
 	Ogre::Vector3 resultingAcc = acceleration;
 	resultingAcc += forceAccum*inverseMass;
+	angularMomentum += torqueAccum*duration;
 	
-	Ogre::Vector3 angularAcceleration = inverseInertiaTensorWorld * torqueAccum;
+	angularVelocity = (inverseInertiaTensorWorld * angularMomentum);
 	
-	std::cout << "angularAcc: ";
-	std::cout << angularAcceleration << std::endl;
+	std::cout << "angularVelocity: ";
+	std::cout << angularVelocity << std::endl;
 	
 	//Update linear velocity from the acceleration
-	velocity += resultingAcc*duration;
-	
-	Ogre::Quaternion qtemp = Ogre::Quaternion(0.0, angularAcceleration.x * duration, angularAcceleration.y * duration, angularAcceleration.z * duration);
-	qtemp = qtemp * rotation;
-	rotation.w += qtemp.w * 0.5;
-	rotation.x += qtemp.x * 0.5;
-	rotation.y += qtemp.y * 0.5;
-	rotation.z += qtemp.z * 0.5;
-	
+	velocity += resultingAcc*duration;	
 	
 	//Drag 
 	velocity *= Ogre::Math::Pow(damping, duration);
-	rotation = rotation * Ogre::Math::Pow(angularDamping, duration);
+	angularVelocity = angularVelocity * Ogre::Math::Pow(angularDamping, duration);
 	
 	// Update linear position
 	position += velocity*duration;
 	
+	
+	
+	
 	// Update angular position
-	qtemp = Ogre::Quaternion(0.0, rotation.x * duration, rotation.y * duration, rotation.z * duration);
+	Ogre::Quaternion qtemp = Ogre::Quaternion(0.0, angularVelocity.x * duration, angularVelocity.y * duration, angularVelocity.z * duration);
 	qtemp = qtemp * orientation;
 	orientation.w += qtemp.w * 0.5;
 	orientation.x += qtemp.x * 0.5;
