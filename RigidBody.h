@@ -51,6 +51,8 @@ namespace fury
 		void setMass(real mass);
 		real getInverseMass() const;
 		void getInverseInertiaTensorWorld(Ogre::Matrix3 *inverseInertiaTensor) const;
+		void addVelocity(const Ogre::Vector3 &deltaVelocity);
+		void addRotation(const Ogre::Vector3 &deltaRotation);
 		
 	};
 }

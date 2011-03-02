@@ -15,7 +15,8 @@
 
 namespace fury 
 {
-	//class CollisionDetector;
+	class IntersectionTest;
+	class CollisionDetector;
 	
 	
 	struct CollisionData
@@ -53,6 +54,9 @@ namespace fury
 	class Primitive
 	{
 	public:
+		friend class IntersectionTest;
+        friend class CollisionDetector;
+		
 		RigidBody *body;
 		Ogre::Matrix4 offset;
 		Ogre::Matrix4 transform;
@@ -71,9 +75,27 @@ namespace fury
 		Ogre::Vector3 halfSize;
 	};
 	
+	class IntersectionTest
+	{
+	public:
+		bool boxAndBox(const Box &one, const Box &two);
+	};
 	
+	class CollisionDetector
+	{
+	public:
+		static unsigned boxAndHalfSpace(const Box &box, const Plane &plane, CollisionData *data);
+		
+		static unsigned boxAndPoint(const Box &box,	const Ogre::Vector3 &point, CollisionData *data);
+	};
 	
+
 	void detectContacts(const Primitive &firstPrimitive, const Primitive &secondPrimitive, CollisionData *data);	
+	
+	
+	
+	
+		
 	
 } // namespace fury
 

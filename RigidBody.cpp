@@ -170,3 +170,13 @@ void RigidBody::getInverseInertiaTensorWorld(Ogre::Matrix3 *inverseInertiaTensor
 {
     *inverseInertiaTensor = inverseInertiaTensorWorld;
 };
+
+void RigidBody::addVelocity(const Ogre::Vector3 &deltaVelocity)
+{
+    velocity += deltaVelocity;
+}
+
+void RigidBody::addRotation(const Ogre::Vector3 &deltaRotation)
+{
+    angularVelocity += deltaRotation;
+}
