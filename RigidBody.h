@@ -18,6 +18,8 @@ namespace fury
 	class RigidBody
 	{		
 	public:
+		enum Shape {BOX, BALL};
+		
 		Ogre::Vector3 position;
 		Ogre::Quaternion orientation;
 		Ogre::Vector3 velocity;
@@ -47,7 +49,13 @@ namespace fury
 		bool hasFiniteMass();
 		real getMass();
 		void setMass(real mass);
+
 		void setPosition(const Ogre::Vector3 &pos);
+
+		real getInverseMass() const;
+		void getInverseInertiaTensorWorld(Ogre::Matrix3 *inverseInertiaTensor) const;
+		
+
 	};
 }
 

@@ -9,6 +9,8 @@
 
 #include "GameObject.h"
 #include "OgreFramework.h"
+#include "contacts.h"
+#include "collide_fine.h"
 
 using namespace Ogre;
 using namespace fury;
@@ -71,6 +73,8 @@ struct GameObjectRegistry::GameObjectRegistration* GameObjectRegistry::getGameOb
 
 void GameObjectRegistry::runCollisions()
 {
+	// Leta efter grova kollisioner med andra RigidBody's
+	
 	std::vector<PotentialContact> pcr;
 	
 	for (Registry::iterator i = registrations.begin(); i != registrations.end(); ++i)
@@ -86,12 +90,35 @@ void GameObjectRegistry::runCollisions()
 				
 				if(thisBs->overlaps(thatBs))
 				{
-					PotentialContact pc;
-					pc.body[0] = i->rb;
-					pc.body[1] = j->rb;
-					
-					pcr.push_back(pc);
-					std::cout << "Overlap!" << std::endl;
+					if(pcr.size() == 0)
+					{
+						PotentialContact pc;
+						pc.body[0] = i->rb;
+						pc.body[1] = j->rb;
+						
+						pcr.push_back(pc);
+					}
+					else
+					{
+						bool collisionExists = false;
+						
+						for (std::vector<PotentialContact>::iterator m = pcr.begin(); m != pcr.end(); ++m)
+						{
+							if( (m->body[0] == i->rb && m->body[1] == j->rb) || (m->body[0] == j->rb && m->body[1] == i->rb) )
+							{
+								collisionExists = true;
+							}
+						}
+						
+						if (!collisionExists)
+						{
+							PotentialContact pc;
+							pc.body[0] = i->rb;
+							pc.body[1] = j->rb;
+							
+							pcr.push_back(pc);
+						}
+					}
 				}
 				
 				delete thatBs;
@@ -99,5 +126,39 @@ void GameObjectRegistry::runCollisions()
 		}
 		
 		delete thisBs;
+		
+		//std::cout << "Possible object-to-object collisions: " << pcr.size() << std::endl;
+		
+		// Nu har vi fått en lista på potentiella kontakter.
+		// Kolla dessa med fine collision.
+		
+		CollisionData cd;
+		Contact contacts[512];
+		
+		cd.contacts = contacts;
+		cd.contactsLeft = 512;
+		cd.tolerance = 0.01;
+		cd.restitution = .9;
+		cd.friction = 1.0;
+		
+		Plane flr;
+		flr.normal = Ogre::Vector3(0.0, 1.0, 0.0);
+		flr.offset = 0.0;
+		
+		// kolla kollision med golvet
+		for (Registry::iterator i = registrations.begin(); i != registrations.end(); ++i)
+		{
+			Box b;
+			b.body = i->rb;
+			b.halfSize = Ogre::Vector3(.5, .5, .5);
+			
+			CollisionTests::boxAndHalfSpace(b, flr, &cd);
+		}
+		
+		
+		// Nu har vi möjligtvis kollisioner
+		
+		if(cd.contactsLeft < 512)
+			std::cout << "Collisions: " << (512 - cd.contactsLeft) << std::endl;
 	}
 };

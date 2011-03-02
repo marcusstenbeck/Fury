@@ -128,7 +128,18 @@ void RigidBody::setMass(real mass)
 	inverseMass = 1/mass;
 };
 
+
 void RigidBody::setPosition(const Ogre::Vector3 &pos)
 {
 	position = pos;
+}
+
+real RigidBody::getInverseMass() const
+{
+    return inverseMass;
+};
+
+void RigidBody::getInverseInertiaTensorWorld(Ogre::Matrix3 *inverseInertiaTensor) const
+{
+    *inverseInertiaTensor = inverseInertiaTensorWorld;
 };

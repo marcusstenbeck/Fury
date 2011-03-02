@@ -75,7 +75,7 @@ void DemoApp::setupDemoScene()
 	
 	fury::Core::getSingletonPtr()->gor.add(new fury::RigidBody(), m_pCubeNode, std::string("kass"));
 	rb = fury::Core::getSingletonPtr()->gor.getGameObjectRegistration(std::string("kass"))->rb;
-	rb->setPosition(Ogre::Vector3(1.0, 0.0, 0.0));
+	rb->setPosition(Ogre::Vector3(1.0, 1.5, 0.0));
 	rb->setInertiaTensor((rb->getMass()/12) * Ogre::Matrix3(0.5, 0.0, 0.0,
 															0.0, 0.5, 0.0,
 															0.0, 0.0, 0.5

@@ -54,8 +54,6 @@ namespace fury
 	{
 	public:
 		RigidBody *body;
-		Ogre::Matrix4 offset;
-		Ogre::Matrix4 transform;
 	};
 	
 	class Plane : public Primitive
@@ -72,8 +70,24 @@ namespace fury
 	};
 	
 	
-	
 	void detectContacts(const Primitive &firstPrimitive, const Primitive &secondPrimitive, CollisionData *data);	
+	
+	//static inline real transformToAxis(const Box &box, const Ogre::Vector3 &axis);
+	
+	//bool overlapOnAxis(const Box &one, const Box &two, const Ogre::Vector3 &axis,  const Ogre::Vector3 &toCenter);
+	
+	class CollisionTests
+	{
+	public:
+		static unsigned boxAndHalfSpace(const Box &box, const Plane &plane, CollisionData *data);
+	};
+	
+	class IntersectionTest
+	{
+	public:
+		bool boxAndBox(const Box &one, const Box &two);
+	};
+	
 	
 } // namespace fury
 
