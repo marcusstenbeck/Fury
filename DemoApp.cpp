@@ -52,34 +52,36 @@ void DemoApp::setupDemoScene()
 	m_pCubeNode = OgreFramework::getSingletonPtr()->m_pSceneMgr->getRootSceneNode()->createChildSceneNode("CubeNode");
 	m_pCubeNode->attachObject(m_pCubeEntity);
 	m_pCubeNode->setScale(0.01, 0.01, 0.01);
+
+	
+	fury::Core::getSingletonPtr()->gor.add(new fury::RigidBody(), m_pCubeNode, std::string("ass"));
 	
 	
-	rb1 = new fury::RigidBody();
-	rb1->forceAccum = Ogre::Vector3(0.0, 0.0, 0.0);
-	rb1->torqueAccum = Ogre::Vector3(0.0, 0.0, 0.0);
-	rb1->position = Ogre::Vector3(0.0, 0.5, 0.0);
-	rb1->angularVelocity = Ogre::Vector3(0.0, 0.0, 0.0);
-	rb1->angularMomentum = Ogre::Vector3(0.0,0.0,0.0);
-	rb1->orientation = Ogre::Quaternion(1.0, 0.0, 0.0, 0.0);
-	rb1->setMass(1.0);
-	rb1->velocity = Ogre::Vector3(0.0, 0.0, 0.0);
-	rb1->damping = 1.0;
-	rb1->angularDamping = 1.0;
-	rb1->acceleration = Ogre::Vector3(0.0, 0.0, 0.0);
-	rb1->setInertiaTensor((rb1->getMass()/12) * Ogre::Matrix3(0.5, 0.0, 0.0,
+	rb = fury::Core::getSingletonPtr()->gor.getGameObjectRegistration(std::string("ass"))->rb;
+	rb->setPosition(Ogre::Vector3(0.0, 5.0, 0.0));
+	rb->setInertiaTensor((rb->getMass()/12) * Ogre::Matrix3(0.5, 0.0, 0.0,
 															  0.0, 0.5, 0.0,
 															  0.0, 0.0, 0.5
 															  ));
-	rb1->addForceAtPoint(Ogre::Vector3(0.0, 100.0, 0.0), rb1->position + Ogre::Vector3(0.0, 0.0, 0.0));
-	rb1->calculateDerivedData();
+	rb->addForceAtPoint(Ogre::Vector3(0.0, 100.0, 0.0), rb->position + Ogre::Vector3(0.0, 0.0, 0.0));
 	
-	fury::Core::getSingletonPtr()->gor.add(rb1, m_pCubeNode);
-	fury::Core::getSingletonPtr()->fr.add(rb1, new fury::Gravity(Ogre::Vector3(0.0, -9.82, 0.0)));
 	
-	//m_pCubeEntity = OgreFramework::getSingletonPtr()->m_pSceneMgr->createEntity("Plane", Ogre::SceneManager::PT_PLANE);
-	//m_pCubeNode = OgreFramework::getSingletonPtr()->m_pSceneMgr->getRootSceneNode()->createChildSceneNode("PlaneNode");
-	//m_pCubeNode->attachObject(m_pCubeEntity);
-	//m_pCubeNode->setOrientation(Ogre::Quaternion(Ogre::Degree(-90), Ogre::Vector3::UNIT_X));
+	fury::Core::getSingletonPtr()->fr.add(rb, new fury::Gravity(Ogre::Vector3(0.0, -9.82, 0.0)));
+	
+	m_pCubeEntity = OgreFramework::getSingletonPtr()->m_pSceneMgr->createEntity("Cube2", Ogre::SceneManager::PT_CUBE);
+	m_pCubeNode = OgreFramework::getSingletonPtr()->m_pSceneMgr->getRootSceneNode()->createChildSceneNode("CubeNode2");
+	m_pCubeNode->attachObject(m_pCubeEntity);
+	m_pCubeNode->setScale(0.01, 0.01, 0.01);
+	
+	fury::Core::getSingletonPtr()->gor.add(new fury::RigidBody(), m_pCubeNode, std::string("kass"));
+	rb = fury::Core::getSingletonPtr()->gor.getGameObjectRegistration(std::string("kass"))->rb;
+	rb->setPosition(Ogre::Vector3(1.0, 1.5, 0.0));
+	rb->setInertiaTensor((rb->getMass()/12) * Ogre::Matrix3(0.5, 0.0, 0.0,
+															0.0, 0.5, 0.0,
+															0.0, 0.0, 0.5
+															));
+	rb->addForceAtPoint(Ogre::Vector3(0.0, 100.0, 0.0), rb->position + Ogre::Vector3(.01, 0.0, 0.0));
+	fury::Core::getSingletonPtr()->fr.add(rb, new fury::Gravity(Ogre::Vector3(0.0, -4.0, 0.0)));
 }
 
 //|||||||||||||||||||||||||||||||||||||||||||||||
@@ -104,20 +106,13 @@ void DemoApp::runDemo()
 		{
 			startTime = OgreFramework::getSingletonPtr()->m_pTimer->getMillisecondsCPU();
 			
-			OgreFramework::getSingletonPtr()->m_pLog->logMessage("### : ### ");
-			OgreFramework::getSingletonPtr()->m_pLog->logMessage("position: " + Ogre::StringConverter::toString(rb1->position));
-			OgreFramework::getSingletonPtr()->m_pLog->logMessage("forceAccum: " + Ogre::StringConverter::toString(rb1->forceAccum));
-			OgreFramework::getSingletonPtr()->m_pLog->logMessage("velocity: " + Ogre::StringConverter::toString(rb1->velocity));
-			OgreFramework::getSingletonPtr()->m_pLog->logMessage("acceleration: " + Ogre::StringConverter::toString(rb1->acceleration));
-			OgreFramework::getSingletonPtr()->m_pLog->logMessage("angularVelocity: " + Ogre::StringConverter::toString(rb1->angularVelocity));
-			OgreFramework::getSingletonPtr()->m_pLog->logMessage("orientation: " + Ogre::StringConverter::toString(rb1->orientation));
-			
 			OgreFramework::getSingletonPtr()->m_pKeyboard->capture();
 			OgreFramework::getSingletonPtr()->m_pMouse->capture();
 			OgreFramework::getSingletonPtr()->updateOgre(timeSinceLastFrame);
 			
 			if(timeSinceLastFrame > 0)
 			{
+				fury::Core::getSingletonPtr()->gor.runCollisions();
 				fury::Core::getSingletonPtr()->fr.updateForces(timeSinceLastFrame/1000);
 				fury::Core::getSingletonPtr()->gor.updateSceneNodes(timeSinceLastFrame/1000);
 			}
@@ -149,16 +144,16 @@ bool DemoApp::keyPressed(const OIS::KeyEvent &keyEventRef)
 	
 	if(OgreFramework::getSingletonPtr()->m_pKeyboard->isKeyDown(OIS::KC_F))
 	{
-		//rb1->addForceAtPoint(Ogre::Vector3(0.0, 1000.0, 0.0), Ogre::Vector3(0.0, 1.0, 0.0).randomDeviant(Ogre::Radian(Ogre::Math::PI)));
-		rb1->addForceAtPoint(Ogre::Vector3(0.0, 150.0, 0.0), rb1->position + Ogre::Vector3(.05, 0.0, 0.0));
+		//rb->addForceAtPoint(Ogre::Vector3(0.0, 1000.0, 0.0), Ogre::Vector3(0.0, 1.0, 0.0).randomDeviant(Ogre::Radian(Ogre::Math::PI)));
+		rb->addForceAtPoint(Ogre::Vector3(0.0, 150.0, 0.0), rb->position + Ogre::Vector3(.05, 0.0, 0.0));
 	}
 	if(OgreFramework::getSingletonPtr()->m_pKeyboard->isKeyDown(OIS::KC_G))
 	{
-		rb1->addForceAtPoint(Ogre::Vector3(0.0, 150.0, 0.0), rb1->position + Ogre::Vector3(-.05, 0.0, 0.0));
+		rb->addForceAtPoint(Ogre::Vector3(0.0, 150.0, 0.0), rb->position + Ogre::Vector3(-.05, 0.0, 0.0));
 	}
 	if(OgreFramework::getSingletonPtr()->m_pKeyboard->isKeyDown(OIS::KC_H))
 	{
-		rb1->addForceAtPoint(Ogre::Vector3(50.0, 100.0, 0.0), rb1->position + Ogre::Vector3(0.0, 0.0, .05));
+		rb->addForceAtPoint(Ogre::Vector3(50.0, 100.0, 0.0), rb->position + Ogre::Vector3(0.0, 0.0, .05));
 	}
 #endif
 	return true;

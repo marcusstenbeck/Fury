@@ -31,7 +31,7 @@ private:
 
 	bool						m_bShutdown;
 	
-	fury::RigidBody*			rb1;
+	fury::RigidBody*			rb;
 };
 
 //|||||||||||||||||||||||||||||||||||||||||||||||

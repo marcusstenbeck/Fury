@@ -13,6 +13,8 @@
 #include "fgen.h"
 #include "GameObject.h"
 #include "OgreFramework.h"
+#include <vector>
+#include "collide_coarse.h"
 
 namespace fury
 {
@@ -24,6 +26,8 @@ namespace fury
 		
 		static Core& getSingleton();
 		static Core* getSingletonPtr();
+		
 	};
+
 }
 #endif

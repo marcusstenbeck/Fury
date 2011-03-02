@@ -11,6 +11,8 @@
 
 #include "OgreFramework.h"
 #include "RigidBody.h"
+#include "collide_coarse.h"
+#include <string>
 
 namespace fury
 {
@@ -19,6 +21,7 @@ namespace fury
 	protected:
 		struct GameObjectRegistration
 		{
+			std::string gName;
 			RigidBody* rb;
 			Ogre::SceneNode* sn;
 		};
@@ -28,11 +31,15 @@ namespace fury
 		
 	public:
 		
-		void add(RigidBody *rb, Ogre::SceneNode *sn);
+		void add(RigidBody *rb, Ogre::SceneNode *sn, std::string gName);
 		void remove(RigidBody *rb, Ogre::SceneNode *sn);
 		void clear();
 		
 		void updateSceneNodes(real duration);
+		
+		void runCollisions();
+		
+		struct GameObjectRegistration* getGameObjectRegistration(std::string s);
 	};
 
 }

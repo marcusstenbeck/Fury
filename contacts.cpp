@@ -37,7 +37,7 @@ void Contact::calculateContactBasis()
 		// Skalning, för att försäkra oss om att resultaten är normaliserade.
 		const real s = (real)1.0f/
 		sqrt(contactNormal.z*contactNormal.z +
-				  contactNormal.x*contactNormal.x);
+			 contactNormal.x*contactNormal.x);
 		// Den nya X-axeln ska ha räta vinklar mot världens Y-axel.
 		contactTangent[0].x = contactNormal.z*s;
 		contactTangent[0].y = 0;
@@ -52,7 +52,7 @@ void Contact::calculateContactBasis()
 		// Skalning, för att försäkra oss om att resultaten är normaliserade.
 		const real s = (real)1.0/
 		sqrt(contactNormal.z*contactNormal.z +
-				  contactNormal.y*contactNormal.y);
+			 contactNormal.y*contactNormal.y);
 		// Den nya X-axeln ska ha räta vinklar mot världens X-axel.
 		contactTangent[0].x = 0;
 		contactTangent[0].y = -contactNormal.z*s;
@@ -162,6 +162,7 @@ void Contact::applyVelocityChange(Ogre::Vector3 velocityChange[2], Ogre::Vector3
         body[1]->addVelocity(velocityChange[1]);
         body[1]->addRotation(rotationChange[1]);
     }
+<<<<<<< HEAD
 }
 
 
@@ -261,3 +262,104 @@ void Contact::setSkewSymmetric(const Ogre::Vector3 v)
 	body->velocity += velocityChange;
 	body->angularVelocity += rotationChange;
 }*/
+=======
+}
+
+
+/*Ogre::Vector3 Contact::calculateFrictionImpulse(Ogre::Matrix3 * inverseInertiaTensor)
+ {
+ Ogre::Vector3 impulseContact;
+ real inverseMass = body[0]->getInverseMass();
+ 
+ // The equivalent of a cross product in matrices is multiplication
+ // by a skew symmetric matrix - we build the matrix for converting
+ // between linear and angular quantities.
+ Ogre::Matrix3 impulseToTorque;
+ impulseToTorque.setSkewSymmetric(relativeContactPosition[0]);
+ 
+ // Build the matrix to convert contact impulse to change in velocity
+ // in world coordinates.
+ Ogre::Matrix3 deltaVelWorld = impulseToTorque;
+ deltaVelWorld *= inverseInertiaTensor[0];
+ deltaVelWorld *= impulseToTorque;
+ deltaVelWorld *= -1;
+ 
+ // Check if we need to add body two's data
+ if (body[1])
+ {
+ // Set the cross product matrix
+ impulseToTorque.setSkewSymmetric(relativeContactPosition[1]);
+ 
+ // Calculate the velocity change matrix
+ Ogre::Matrix3 deltaVelWorld2 = impulseToTorque;
+ deltaVelWorld2 *= inverseInertiaTensor[1];
+ deltaVelWorld2 *= impulseToTorque;
+ deltaVelWorld2 *= -1;
+ 
+ // Add to the total delta velocity.
+ deltaVelWorld += deltaVelWorld2;
+ 
+ // Add to the inverse mass
+ inverseMass += body[1]->getInverseMass();
+ }
+ 
+ // Do a change of basis to convert into contact coordinates.
+ Ogre::Matrix3 deltaVelocity = contactToWorld.transpose();
+ deltaVelocity *= deltaVelWorld;
+ deltaVelocity *= contactToWorld;
+ 
+ // Add in the linear velocity change
+ deltaVelocity.data[0] += inverseMass;
+ deltaVelocity.data[4] += inverseMass;
+ deltaVelocity.data[8] += inverseMass;
+ 
+ // Invert to get the impulse needed per unit velocity
+ Ogre::Matrix3 impulseMatrix = deltaVelocity.inverse();
+ 
+ // Find the target velocities to kill
+ Ogre::Vector3 velKill(desiredDeltaVelocity,
+ -contactVelocity.y,
+ -contactVelocity.z);
+ 
+ // Find the impulse to kill target velocities
+ impulseContact = impulseMatrix.transform(velKill);
+ 
+ // Check for exceeding friction
+ real planarImpulse = real_sqrt(
+ impulseContact.y*impulseContact.y +
+ impulseContact.z*impulseContact.z
+ );
+ if (planarImpulse > impulseContact.x * friction)
+ {
+ // We need to use dynamic friction
+ impulseContact.y /= planarImpulse;
+ impulseContact.z /= planarImpulse;
+ 
+ impulseContact.x = deltaVelocity.data[0] +
+ deltaVelocity.data[1]*friction*impulseContact.y +
+ deltaVelocity.data[2]*friction*impulseContact.z;
+ impulseContact.x = desiredDeltaVelocity / impulseContact.x;
+ impulseContact.y *= friction * impulseContact.x;
+ impulseContact.z *= friction * impulseContact.x;
+ }
+ return impulseContact;
+ }
+ 
+ void Contact::setSkewSymmetric(const Ogre::Vector3 v)
+ {
+ this[0] = data[4] = data[8] = 0;
+ data[1] = -v.z;
+ data[2] = v.y;
+ data[3] = v.z;
+ data[5] = -v.x;
+ data[6] = -v.y;
+ data[7] = v.x;
+ }*/
+
+
+/*void Contact::applyImpulse(const Ogre::Vector3 &impulse, RigidBody *body, Ogre::Vector3 *velocityChange, Ogre::Vector3 *rotationChange)
+ {
+ body->velocity += velocityChange;
+ body->angularVelocity += rotationChange;
+ }*/
+>>>>>>> 49cf9b07c32ac543fcf2288d541def1a512e7eea
