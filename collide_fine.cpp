@@ -12,16 +12,12 @@
 
 using namespace fury;
 
-<<<<<<< HEAD
 // **
 //
 // Box och plan.
 //
 // **
 unsigned CollisionDetector::boxAndHalfSpace(const Box &box, const Plane &plane, CollisionData *data)
-=======
-unsigned CollisionTests::boxAndHalfSpace(const Box &box, const Plane &plane, CollisionData *data)
->>>>>>> 49cf9b07c32ac543fcf2288d541def1a512e7eea
 {
 	
 	// Varje kombination av + och - för varje halfSize.
@@ -77,12 +73,13 @@ unsigned CollisionTests::boxAndHalfSpace(const Box &box, const Plane &plane, Col
     return contactsUsed;
 }
 
-<<<<<<< HEAD
+
 // **
 //
 // Box och point.
 //
 // **
+/*
 unsigned CollisionDetector::boxAndPoint(const Box &box,	const Ogre::Vector3 &point, CollisionData *data)
 {
 	//Transformera point till box-koordinater.
@@ -90,10 +87,8 @@ unsigned CollisionDetector::boxAndPoint(const Box &box,	const Ogre::Vector3 &poi
 	
 	return 0;
 }
+*/
 
-
-=======
->>>>>>> 49cf9b07c32ac543fcf2288d541def1a512e7eea
 static inline real transformToAxis(const Box &box, const Ogre::Vector3 &axis)
 {
 	//box.halfSize.x * real_abs(axis * box.getAxis(0)) + box.halfSize.y * real_abs(axis * box.getAxis(1)) + box.halfSize.z * real_abs(axis * box.getAxis(2));	
@@ -147,12 +142,8 @@ bool IntersectionTest::boxAndBox(const Box &one, const Box &two)
 #undef TEST_OVERLAP
 
 
-
-<<<<<<< HEAD
 /*unsigned CollisionDetector::boxAndPoint(const Box &box,	const Vector3 &point, CollisionData *data)
 {
 	
 }*/
-=======
 
->>>>>>> 49cf9b07c32ac543fcf2288d541def1a512e7eea

@@ -79,7 +79,6 @@ namespace fury
 		bool boxAndBox(const Box &one, const Box &two);
 	};
 	
-<<<<<<< HEAD
 	class CollisionDetector
 	{
 	public:
@@ -95,26 +94,11 @@ namespace fury
 	
 	
 		
-=======
 	void detectContacts(const Primitive &firstPrimitive, const Primitive &secondPrimitive, CollisionData *data);	
 	
 	//static inline real transformToAxis(const Box &box, const Ogre::Vector3 &axis);
 	
 	//bool overlapOnAxis(const Box &one, const Box &two, const Ogre::Vector3 &axis,  const Ogre::Vector3 &toCenter);
-	
-	class CollisionTests
-	{
-	public:
-		static unsigned boxAndHalfSpace(const Box &box, const Plane &plane, CollisionData *data);
-	};
-	
-	class IntersectionTest
-	{
-	public:
-		bool boxAndBox(const Box &one, const Box &two);
-	};
-	
->>>>>>> 49cf9b07c32ac543fcf2288d541def1a512e7eea
 	
 } // namespace fury
 

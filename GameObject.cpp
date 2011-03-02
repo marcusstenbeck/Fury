@@ -152,7 +152,7 @@ void GameObjectRegistry::runCollisions()
 			b.body = i->rb;
 			b.halfSize = Ogre::Vector3(.5, .5, .5);
 			
-			CollisionTests::boxAndHalfSpace(b, flr, &cd);
+			CollisionDetector::boxAndHalfSpace(b, flr, &cd);
 		}
 		
 		
