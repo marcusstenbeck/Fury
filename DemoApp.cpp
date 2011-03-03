@@ -68,6 +68,13 @@ void DemoApp::setupDemoScene()
 	
 	fury::Core::getSingletonPtr()->fr.add(rb, new fury::Gravity(Ogre::Vector3(0.0, -9.82, 0.0)));
 	
+	
+	m_pCubeEntity = OgreFramework::getSingletonPtr()->m_pSceneMgr->createEntity("Cube2", Ogre::SceneManager::PT_PLANE);
+	m_pCubeNode = OgreFramework::getSingletonPtr()->m_pSceneMgr->getRootSceneNode()->createChildSceneNode("CubeNode2");
+	m_pCubeNode->setDirection(Ogre::Vector3::NEGATIVE_UNIT_Y);
+	m_pCubeNode->attachObject(m_pCubeEntity);
+	
+	/*
 	m_pCubeEntity = OgreFramework::getSingletonPtr()->m_pSceneMgr->createEntity("Cube2", Ogre::SceneManager::PT_CUBE);
 	m_pCubeNode = OgreFramework::getSingletonPtr()->m_pSceneMgr->getRootSceneNode()->createChildSceneNode("CubeNode2");
 	m_pCubeNode->attachObject(m_pCubeEntity);
@@ -82,6 +89,7 @@ void DemoApp::setupDemoScene()
 															));
 	rb->addForceAtPoint(Ogre::Vector3(0.0, 100.0, 0.0), rb->position + Ogre::Vector3(.01, 0.0, 0.0));
 	fury::Core::getSingletonPtr()->fr.add(rb, new fury::Gravity(Ogre::Vector3(0.0, -4.0, 0.0)));
+	 */
 }
 
 //|||||||||||||||||||||||||||||||||||||||||||||||
@@ -112,7 +120,7 @@ void DemoApp::runDemo()
 			
 			if(timeSinceLastFrame > 0)
 			{
-				fury::Core::getSingletonPtr()->gor.runCollisions();
+				fury::Core::getSingletonPtr()->gor.runCollisions(timeSinceLastFrame/1000);
 				fury::Core::getSingletonPtr()->fr.updateForces(timeSinceLastFrame/1000);
 				fury::Core::getSingletonPtr()->gor.updateSceneNodes(timeSinceLastFrame/1000);
 			}

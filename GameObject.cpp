@@ -71,7 +71,7 @@ struct GameObjectRegistry::GameObjectRegistration* GameObjectRegistry::getGameOb
 	return NULL;
 };
 
-void GameObjectRegistry::runCollisions()
+void GameObjectRegistry::runCollisions(real duration)
 {
 	// Leta efter grova kollisioner med andra RigidBody's
 	
@@ -135,11 +135,13 @@ void GameObjectRegistry::runCollisions()
 		CollisionData cd;
 		Contact contacts[512];
 		
-		cd.contacts = contacts;
+		cd.contactsArray = contacts;
+		cd.contact = contacts;
+		cd.contactCount = 0;
 		cd.contactsLeft = 512;
-		cd.tolerance = 0.01;
-		cd.restitution = .9;
-		cd.friction = 1.0;
+		cd.tolerance = 0.0001;
+		cd.restitution = .4;
+		cd.friction = 0.9;
 		
 		Plane flr;
 		flr.normal = Ogre::Vector3(0.0, 1.0, 0.0);
@@ -159,6 +161,18 @@ void GameObjectRegistry::runCollisions()
 		// Nu har vi möjligtvis kollisioner
 		
 		if(cd.contactsLeft < 512)
-			std::cout << "Collisions: " << (512 - cd.contactsLeft) << std::endl;
+			std::cout << "Collisions: " << cd.contactCount << std::endl;
+		
+		
+		/*
+		for (Contact* contact=contacts; contact < (contacts + cd.contactCount); contact++)
+		{
+			std::cout << "cp: " << contact->body[0]->position << std::endl;
+		}
+		*/
+		
+		ContactResolver cr(512);
+		
+		cr.resolveContacts(cd.contactsArray, 512 - cd.contactsLeft, duration);
 	}
 };

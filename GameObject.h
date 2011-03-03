@@ -37,7 +37,7 @@ namespace fury
 		
 		void updateSceneNodes(real duration);
 		
-		void runCollisions();
+		void runCollisions(real duration);
 		
 		struct GameObjectRegistration* getGameObjectRegistration(std::string s);
 	};

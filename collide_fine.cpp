@@ -24,7 +24,7 @@ unsigned CollisionDetector::boxAndHalfSpace(const Box &box, const Plane &plane, 
 	static real mults[8][3] = {{1,1,1},{-1,1,1},{1,-1,1},{-1,-1,1},
 		{1,1,-1},{-1,1,-1},{1,-1,-1},{-1,-1,-1}};
 	
-	Contact* contact = data->contacts;
+	Contact* contact = data->contact;
 	unsigned contactsUsed = 0;
 	
 	//Skapar rotationsmatris
@@ -45,11 +45,10 @@ unsigned CollisionDetector::boxAndHalfSpace(const Box &box, const Plane &plane, 
 		vertexPos += box.body->position;
 		
 		// Räknar ut avståndet till planet.
-		real vertexDistance = vertexPos.absDotProduct(plane.normal);
+		real vertexDistance = vertexPos.dotProduct(plane.normal);
 		
-		
-		
-		if (vertexDistance <= (plane.offset + data->tolerance))
+		//if (vertexDistance <= (plane.offset + data->tolerance))
+		if (vertexDistance <= plane.offset)
 		{
 			// Skapa kontaktdatan.
 			// Kontaktpunkten är halvvägs mellan punkten och planet.

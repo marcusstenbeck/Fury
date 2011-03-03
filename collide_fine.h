@@ -22,7 +22,8 @@ namespace fury
 	struct CollisionData
 	{
 		// Håller arrayen med kontakter som vi ska skriva till.
-		Contact *contacts;
+		Contact *contactsArray;
+		Contact *contact;
 		
 		// Håller antalet platser kvar i contacts.
 		unsigned contactsLeft;
@@ -46,7 +47,7 @@ namespace fury
             contactCount += count;
 			
             // Förflytta till nästa plats i arrayen.
-            contacts += count;
+            contact += count;
         }
 		
 	};

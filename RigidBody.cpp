@@ -37,7 +37,7 @@ void RigidBody::calculateDerivedData()
 	orientation.ToRotationMatrix(orientationMatrix);
 	inverseInertiaTensorWorld = orientationMatrix * inverseInertiaTensor * orientationMatrix.Transpose();
 	
-	angularVelocity = (inverseInertiaTensorWorld * angularMomentum);
+	//angularVelocity = (inverseInertiaTensorWorld * angularMomentum);
 };
 
 void RigidBody::setInertiaTensor(const Ogre::Matrix3& inertiaTensor)
@@ -82,12 +82,15 @@ void RigidBody::integrate(real duration)
 	assert(duration >= 0.0);
 	
 	//Work out the acceleration from the force
-	Ogre::Vector3 resultingAcc = acceleration;
-	resultingAcc += forceAccum*inverseMass;
-	angularMomentum += torqueAccum*duration;
+	lastFrameAcceleration = acceleration;
+	lastFrameAcceleration += forceAccum*inverseMass;
+	//angularMomentum += torqueAccum*duration;
+	
+	Ogre::Vector3 angularAcceleration = inverseInertiaTensorWorld * torqueAccum;
+	angularVelocity += angularAcceleration * duration;
 	
 	//Update linear velocity from the acceleration
-	velocity += resultingAcc*duration;	
+	velocity += lastFrameAcceleration*duration;	
 	
 	//Drag 
 	velocity *= Ogre::Math::Pow(damping, duration);
@@ -104,6 +107,8 @@ void RigidBody::integrate(real duration)
 	orientation.x += qtemp.x * 0.5;
 	orientation.y += qtemp.y * 0.5;
 	orientation.z += qtemp.z * 0.5;
+	
+//	std::cout << "angularVelocity: " << angularVelocity.length() << std::endl;
 	
 	//Clear accumulator
 	clearAccumulators();
@@ -152,4 +157,6 @@ void RigidBody::addVelocity(const Ogre::Vector3 &deltaVelocity)
 void RigidBody::addRotation(const Ogre::Vector3 &deltaRotation)
 {
     angularVelocity += deltaRotation;
+//	std::cout << "deltaRotation: " << deltaRotation.length() << std::endl;
+
 }
