@@ -41,6 +41,5 @@ namespace fury
 		
 		struct GameObjectRegistration* getGameObjectRegistration(std::string s);
 	};
-
 }
 #endif

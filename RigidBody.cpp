@@ -19,6 +19,7 @@ RigidBody::RigidBody()
 	position = Ogre::Vector3(0.0, 0.0, 0.0);
 	angularVelocity = Ogre::Vector3(0.0, 0.0, 0.0);
 	angularMomentum = Ogre::Vector3(0.0,0.0,0.0);
+	linearMomentum = Ogre::Vector3(0.0,0.0,0.0);
 	orientation = Ogre::Quaternion(1.0, 0.0, 0.0, 0.0);
 	setMass(1.0);
 	velocity = Ogre::Vector3(0.0, 0.0, 0.0);
@@ -36,8 +37,6 @@ void RigidBody::calculateDerivedData()
 	Ogre::Matrix3 orientationMatrix;
 	orientation.ToRotationMatrix(orientationMatrix);
 	inverseInertiaTensorWorld = orientationMatrix * inverseInertiaTensor * orientationMatrix.Transpose();
-	
-	//angularVelocity = (inverseInertiaTensorWorld * angularMomentum);
 };
 
 void RigidBody::setInertiaTensor(const Ogre::Matrix3& inertiaTensor)
@@ -65,8 +64,7 @@ void RigidBody::addForceAtPoint(const Ogre::Vector3 &force, const Ogre::Vector3 
 	forceAccum += force;
 	torqueAccum += pt.crossProduct(force);
 	
-	std::cout << "torqueAccum: ";
-	std::cout << torqueAccum;
+	//std::cout << "torqueAccum: " << torqueAccum << std::endl;
 };
 
 void RigidBody::clearAccumulators()
@@ -83,14 +81,20 @@ void RigidBody::integrate(real duration)
 	
 	//Work out the acceleration from the force
 	lastFrameAcceleration = acceleration;
-	lastFrameAcceleration += forceAccum*inverseMass;
-	//angularMomentum += torqueAccum*duration;
+	acceleration = forceAccum*inverseMass;
+	angularMomentum += torqueAccum*duration;
+	linearMomentum += forceAccum*duration;
 	
-	Ogre::Vector3 angularAcceleration = inverseInertiaTensorWorld * torqueAccum;
-	angularVelocity += angularAcceleration * duration;
+	
+	angularVelocity = (inverseInertiaTensorWorld * angularMomentum);
+	std::cout << "ANGULAR VELOCITY : "<< angularVelocity << std::endl;
+	
+	//Ogre::Vector3 angularAcceleration = inverseInertiaTensorWorld * torqueAccum;
+	//angularVelocity += angularAcceleration * duration;
 	
 	//Update linear velocity from the acceleration
-	velocity += lastFrameAcceleration*duration;	
+	//velocity += acceleration*duration;	
+	velocity = linearMomentum*inverseMass;
 	
 	//Drag 
 	velocity *= Ogre::Math::Pow(damping, duration);

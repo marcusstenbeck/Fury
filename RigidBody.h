@@ -34,9 +34,10 @@ namespace fury
 		real inverseMass;
 		
 		//??
-		Ogre::Vector3 forceAccum;   //Linear momentum
+		Ogre::Vector3 forceAccum; 
 		Ogre::Vector3 torqueAccum;
 		Ogre::Vector3 angularMomentum;
+		Ogre::Vector3 linearMomentum;
 		
 		RigidBody();
 		void calculateDerivedData();

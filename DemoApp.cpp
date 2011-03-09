@@ -58,10 +58,10 @@ void DemoApp::setupDemoScene()
 	
 	
 	rb = fury::Core::getSingletonPtr()->gor.getGameObjectRegistration(std::string("ass"))->rb;
-	rb->setPosition(Ogre::Vector3(0.0, 5.0, 0.0));
-	rb->setInertiaTensor((rb->getMass()/12) * Ogre::Matrix3(0.5, 0.0, 0.0,
-															  0.0, 0.5, 0.0,
-															  0.0, 0.0, 0.5
+	rb->setPosition(Ogre::Vector3(-5.0, 10.0, 5.0));
+	rb->setInertiaTensor((rb->getMass()/12) * Ogre::Matrix3(2.0, 0.0, 0.0,
+															  0.0, 2.0, 0.0,
+															  0.0, 0.0, 2.0
 															  ));
 	rb->addForceAtPoint(Ogre::Vector3(0.0, 100.0, 0.0), rb->position + Ogre::Vector3(0.0, 0.0, 0.0));
 	
@@ -161,7 +161,7 @@ bool DemoApp::keyPressed(const OIS::KeyEvent &keyEventRef)
 	}
 	if(OgreFramework::getSingletonPtr()->m_pKeyboard->isKeyDown(OIS::KC_H))
 	{
-		rb->addForceAtPoint(Ogre::Vector3(50.0, 100.0, 0.0), rb->position + Ogre::Vector3(0.0, 0.0, .05));
+		rb->addForceAtPoint(Ogre::Vector3(0.0, 150.0, 0.0), rb->position + Ogre::Vector3(0.0, 0.0, .05));
 	}
 #endif
 	return true;

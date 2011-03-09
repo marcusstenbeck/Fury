@@ -128,158 +128,115 @@ protected:
 	void setSkewSymmetric(const Ogre::Vector3 v);
 };
 
+
 class ContactResolver
 {
-protected:
-	/**
-	 * Holds the number of iterations to perform when resolving
-	 * velocity.
-	 */
-	unsigned velocityIterations;
-	
-	/**
-	 * Holds the number of iterations to perform when resolving
-	 * position.
-	 */
-	unsigned positionIterations;
-	
-	/**
-	 * To avoid instability velocities smaller
-	 * than this value are considered to be zero. Too small and the
-	 * simulation may be unstable, too large and the bodies may
-	 * interpenetrate visually. A good starting point is the default
-	 * of 0.01.
-	 */
-	real velocityEpsilon;
-	
-	/**
-	 * To avoid instability penetrations
-	 * smaller than this value are considered to be not interpenetrating.
-	 * Too small and the simulation may be unstable, too large and the
-	 * bodies may interpenetrate visually. A good starting point is
-	 * the default of0.01.
-	 */
-	real positionEpsilon;
-	
 public:
-	/**
-	 * Stores the number of velocity iterations used in the
-	 * last call to resolve contacts.
-	 */
-	unsigned velocityIterationsUsed;
+	// HƒR KOMMER BARAFFFUNKTIONERNA
 	
-	/**
-	 * Stores the number of position iterations used in the
-	 * last call to resolve contacts.
-	 */
-	unsigned positionIterationsUsed;
-	
-private:
-	/**
-	 * Keeps track of whether the internal settings are valid.
-	 */
-	bool validSettings;
-	
-public:
-	/**
-	 * Creates a new contact resolver with the given number of iterations
-	 * per resolution call, and optional epsilon values.
-	 */
-	ContactResolver(unsigned iterations,
-					real velocityEpsilon=(real)0.01,
-					real positionEpsilon=(real)0.01);
-	
-	/**
-	 * Creates a new contact resolver with the given number of iterations
-	 * for each kind of resolution, and optional epsilon values.
-	 */
-	ContactResolver(unsigned velocityIterations,
-					unsigned positionIterations,
-					real velocityEpsilon=(real)0.01,
-					real positionEpsilon=(real)0.01);
-	
-	/**
-	 * Returns true if the resolver has valid settings and is ready to go.
-	 */
-	bool isValid()
+	static Ogre::Vector3 ContactResolver::pt_velocity(RigidBody * body, Ogre::Vector3 p)
 	{
-		return (velocityIterations > 0) &&
-		(positionIterations > 0) &&
-		(positionEpsilon >= 0.0f) &&
-		(positionEpsilon >= 0.0f);
+		return body->velocity + body->angularVelocity.crossProduct(p - body->position);
 	}
 	
-	/**
-	 * Sets the number of iterations for each resolution stage.
-	 */
-	void setIterations(unsigned velocityIterations,
-					   unsigned positionIterations);
+	static bool ContactResolver::colliding(Contact * c)
+	{
+		Ogre::Vector3 padot = pt_velocity(c->body[0], c->contactPoint);
+		Ogre::Vector3 pbdot(0,0,0);
+		
+		if ( c->body[1] )
+		{	
+			pbdot = pt_velocity(c->body[1], c->contactPoint);
+		}
+		
+		//Relative velocity
+		real vrel = c->contactNormal.dotProduct(padot-pbdot);
+		
+		std::cout << "RELATIVE VELOCITY : " << vrel << std::endl;
+		
+		real t = 0.01;
+		
+		if (vrel > t ) /*moving away*/
+		{
+			std::cout << "moving away: do nothing" << std::endl;
+			return false;
+		}
+		if (vrel > -t)
+		{	// resting contact
+			
+			std::cout << "resting contact: do nothing" << std::endl;
+			return false;
+		}
+		else //vrel < - t 
+		{	
+			return true;
+		}
+	}
 	
-	/**
-	 * Sets the number of iterations for both resolution stages.
-	 */
-	void setIterations(unsigned iterations);
-	
-	/**
-	 * Sets the tolerance value for both velocity and position.
-	 */
-	void setEpsilon(real velocityEpsilon,
-					real positionEpsilon);
-	
-	/**
-	 * Resolves a set of contacts for both penetration and velocity.
-	 *
-	 * Contacts that cannot interact with
-	 * each other should be passed to separate calls to resolveContacts,
-	 * as the resolution algorithm takes much longer for lots of
-	 * contacts than it does for the same number of contacts in small
-	 * sets.
-	 *
-	 * @param contactArray Pointer to an array of contact objects.
-	 *
-	 * @param numContacts The number of contacts in the array to resolve.
-	 *
-	 * @param numIterations The number of iterations through the
-	 * resolution algorithm. This should be at least the number of
-	 * contacts (otherwise some constraints will not be resolved -
-	 * although sometimes this is not noticable). If the iterations are
-	 * not needed they will not be used, so adding more iterations may
-	 * not make any difference. In some cases you would need millions
-	 * of iterations. Think about the number of iterations as a bound:
-	 * if you specify a large number, sometimes the algorithm WILL use
-	 * it, and you may drop lots of frames.
-	 *
-	 * @param duration The duration of the previous integration step.
-	 * This is used to compensate for forces applied.
-	 */
-	void resolveContacts(Contact *contactArray,
-						 unsigned numContacts,
-						 real duration);
-	
-protected:
-	/**
-	 * Sets up contacts ready for processing. This makes sure their
-	 * internal data is configured correctly and the correct set of bodies
-	 * is made alive.
-	 */
-	void prepareContacts(Contact *contactArray, unsigned numContacts,
-						 real duration);
-	
-	/**
-	 * Resolves the velocity issues with the given array of constraints,
-	 * using the given number of iterations.
-	 */
-	void adjustVelocities(Contact *contactArray,
-						  unsigned numContacts,
-						  real duration);
-	
-	/**
-	 * Resolves the positional issues with the given array of constraints,
-	 * using the given number of iterations.
-	 */
-	void adjustPositions(Contact *contacts,
-						 unsigned numContacts,
-						 real duration);
+	static void ContactResolver::resolveContact(Contact * c, real restitution)
+	{
+		Ogre::Vector3	padot = pt_velocity(c->body[0], c->contactPoint),
+						n = c->contactNormal,
+						ra = c->contactPoint - c->body[0]->position;
+		
+		std::cout << "padot= " << padot << std::endl;
+		
+		
+		real term2 = 0, term4 = 0;
+		Ogre::Vector3 pbdot(0,0,0);
+		Ogre::Vector3 rb(0,0,0);
+		
+		if ( c->body[1] )
+		{
+			pbdot = pt_velocity(c->body[1], c->contactPoint);
+			rb = c->contactPoint - c->body[1]->position;
+			
+			term2 = c->body[1]->inverseMass;
+			term4 = n.dotProduct( (c->body[1]->inverseInertiaTensorWorld * rb.crossProduct(n)).crossProduct(rb) ); //galna parenteser. De borde vara r‰tt.
+		}
+		std::cout << "NORMAL = " << n << std::endl;
+		real vrel = n.dotProduct(padot - pbdot);
+		std::cout << "vrel :" << vrel << std::endl;
+		real numerator = -(1+restitution) * vrel;
+		
+		real term1 = c->body[0]->inverseMass;
+
+		Ogre::Vector3 temp = ra.crossProduct(n);
+		
+		temp = c->body[0]->inverseInertiaTensorWorld * temp;
+		
+		temp = temp.crossProduct(ra);
+		
+		real term3 = n.dotProduct(temp);
+		
+		//real term3 = n.dotProduct( (c->body[0]->inverseInertiaTensorWorld * (ra.crossProduct(n))).crossProduct(ra) ); //galna parenteser. De borde vara r‰tt.
+		
+		real j = numerator/ (term1 + term2 + term3 + term4);
+		
+		Ogre::Vector3 force = j*n;
+		
+		std::cout << "impulse force: " << force << std::endl << "at body point :" << ra << std::endl;
+		
+		/* Apply the impulse to the bodies */
+		c->body[0]->linearMomentum += force;
+		c->body[0]->angularMomentum += ra.crossProduct(force);
+		c->body[0]->angularMomentum = -c->body[0]->angularMomentum;
+
+
+		
+		
+		c->body[0]->velocity = c->body[0]->linearMomentum*c->body[0]->getInverseMass();
+		c->body[0]->angularVelocity = c->body[0]->inverseInertiaTensorWorld * c->body[0]->angularMomentum;
+		
+		
+		std::cout << "angularMomentum : " << c->body[0]->angularMomentum << std::endl;
+		
+		if ( c->body[1] )
+		{
+			
+		}
+	}
+
 };
 
 #endif
